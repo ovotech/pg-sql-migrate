@@ -54,6 +54,20 @@ import { migrate } from '@ovotech/pg-sql-migrate';
 const results = await migrate();
 ```
 
+## Environment variables
+
+In your config file you can use environment variables.
+
+For example, if you have the env var `PG_USER_PASS` setup, you can access it with:
+
+```json
+{
+  "client": "postgresql://postgres:${PG_USER_PASS}@0.0.0.0:5432/postgres",
+  "directory": "migrations"
+  "table" "migrations"
+}
+```
+
 ## Using the library
 
 You can choose a different location for the config file, or to just input its contents directly:
@@ -61,7 +75,9 @@ You can choose a different location for the config file, or to just input its co
 ```typescript
 import { migrate } from '@ovotech/pg-sql-migrate';
 
-const results = await migrate('my_config.json');
+const results = await migrate();
+
+const results = await migrate('custom-config.json');
 
 const results = await migrate({
   client: 'postgresql://postgres:dev-pass@0.0.0.0:5432/postgres',

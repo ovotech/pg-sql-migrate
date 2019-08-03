@@ -1,6 +1,7 @@
 {
   "name": "@ovotech/pg-sql-migrate",
   "description": "run migration scripts incrementally using postgres",
+  "repository": "git@github.com:ovotech/pg-sql-migrate.git",
   "version": "2.0.0",
   "main": "dist/index.js",
   "source": "src/index.ts",
