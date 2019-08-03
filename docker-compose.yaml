@@ -1,0 +1,8 @@
+version: "2"
+services:
+  postgres:
+    image: circleci/postgres:10-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: dev-pass

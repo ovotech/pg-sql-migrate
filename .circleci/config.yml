@@ -1,0 +1,63 @@
+version: 2
+
+npmrc: &npmrc
+  run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+
+restore-cache: &restore-cache
+  restore_cache:
+    keys:
+      - v1-{{ checksum "yarn.lock" }}
+
+save-cache: &save-cache
+  save_cache:
+    key: v1-{{ checksum "yarn.lock" }}
+    paths:
+      - ~/.cache
+
+jobs:
+  test:
+    docker:
+      - image: circleci/node:8.10.0
+      - image: circleci/postgres:10-alpine
+        environment:
+          POSTGRES_PASSWORD: dev-pass
+    steps:
+      - checkout
+      - *restore-cache
+      - run: yarn config set yarn-offline-mirror ~/.cache/yarn
+      - run: yarn
+      - *save-cache
+      - run: yarn build
+      - run: yarn test --runInBand
+
+  publish:
+    docker:
+      - image: circleci/node:8.10.0
+    steps:
+      - checkout
+      - *restore-cache
+      - *npmrc
+      - run: yarn config set yarn-offline-mirror ~/.cache/yarn
+      - run: yarn --frozen-lockfile
+      - run: yarn build
+      - run: git config user.email "ovotech-ci@ovoenergy.com"
+      - run: git config user.name "Ovotech CI"
+      - run: yarn publish
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test:
+          filters:
+            branches:
+              ignore: master
+  deploy:
+    jobs:
+      - test:
+          filters:
+            branches:
+              only: master
+      - publish:
+          requires:
+            - test
