@@ -11,17 +11,17 @@ export class MigrationsReadable extends Readable {
   private migrationFiles?: string[];
   private pg: PGClient;
   private table: string;
-  private dir: string;
+  private directory: string;
 
-  public constructor(pg: PGClient, table: string, dir: string) {
+  public constructor(pg: PGClient, table: string, directory: string) {
     super({ objectMode: true });
     this.pg = pg;
     this.table = table;
-    this.dir = dir;
+    this.directory = directory;
   }
 
   private async initialize(): Promise<void> {
-    const migrationFiles = readdirSync(this.dir).filter(file => file.endsWith('.pgsql'));
+    const migrationFiles = readdirSync(this.directory).filter(file => file.endsWith('.pgsql'));
     await this.initState();
     const completed = await this.loadState();
 
@@ -36,7 +36,7 @@ export class MigrationsReadable extends Readable {
     if (this.migrationFiles && this.migrationFiles[this.current]) {
       const file = this.migrationFiles[this.current++];
       const [id, name] = nameParts(file);
-      const content = readFileSync(join(this.dir, file)).toString();
+      const content = readFileSync(join(this.directory, file)).toString();
       const migration: Migration = { id, name, content };
       return migration;
     } else {

@@ -13,12 +13,12 @@ add a configuration file, which by default is `./pg-sql-migrate.config.json` to 
 ```json
 {
   "client": "postgresql://postgres:dev-pass@0.0.0.0:5432/postgres",
-  "dir": "migrations"
+  "directory": "migrations"
   "table" "migrations"
 }
 ```
 
-The default values for "dir" and "table" configuration is `migrations` but you can override that if you need to.
+The default values for "directory" and "table" configuration is `migrations` but you can override that if you need to.
 
 Instead of a string you can use an object. This is passed directly to pg https://node-postgres.com/features/connecting
 
@@ -34,7 +34,7 @@ Instead of a string you can use an object. This is passed directly to pg https:/
 }
 ```
 
-To create new migrations in the designated "dir" folder you can run:
+To create new migrations in the designated directory you can run:
 
 ```bash
 yarn pg-migrate create my_migration
@@ -68,7 +68,7 @@ const results = await migrate({
   // Custom table location
   table: 'my_table',
   // Custom directory for migration files
-  dir: 'migrations_dir',
+  directory: 'migrations_dir',
 });
 ```
 

@@ -2,7 +2,7 @@ import { ClientConfig, ClientBase } from 'pg';
 
 export interface Config {
   client: ClientConfig | string;
-  dir: string;
+  directory: string;
   table: string;
 }
 
@@ -19,6 +19,6 @@ export interface PGClient {
 export const DEFAULT_CONFIG_FILE = 'pg-sql-migrate.config.json';
 
 export const CONFIG_DEFAULTS = {
-  dir: 'migrations',
+  directory: 'migrations',
   table: 'migrations',
 };

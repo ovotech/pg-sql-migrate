@@ -9,9 +9,9 @@ import { MigrationsCollectTransform } from './MigrationsCollectTransform';
 export const executeMigrations = async (
   pg: PGClient,
   table: string,
-  dir: string,
+  directory: string,
 ): Promise<Migration[]> => {
-  const read = new MigrationsReadable(pg, table, dir);
+  const read = new MigrationsReadable(pg, table, directory);
   const sink = new MigrationsWritable(pg, table);
   const collect = new MigrationsCollectTransform();
 
@@ -26,11 +26,12 @@ export const migrate = async (
   config?: Config | string,
   env = process.env,
 ): Promise<Migration[]> => {
-  const { client, table, dir } = typeof config === 'object' ? config : loadConfig(config, env);
+  const { client, table, directory } =
+    typeof config === 'object' ? config : loadConfig(config, env);
 
   const pg = new Client(client);
   await pg.connect();
-  const results = await executeMigrations(pg, table, dir);
+  const results = await executeMigrations(pg, table, directory);
   await pg.end();
   return results;
 };

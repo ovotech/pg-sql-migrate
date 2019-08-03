@@ -8,10 +8,10 @@ new Command()
   .arguments('<name> [content]')
   .option('-c, --config <path>', 'Path to the configuration file', DEFAULT_CONFIG_FILE)
   .action(async (name: string, content: string, { config }: { config?: string }) => {
-    const { dir } = loadConfig(config);
+    const { directory } = loadConfig(config);
     const file = `${new Date().toISOString()}_${name}.pgsql`;
 
-    writeFileSync(join(dir, file), content);
+    writeFileSync(join(directory, file), content);
 
     console.log(`Created ${file}`);
   })

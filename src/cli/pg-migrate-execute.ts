@@ -10,12 +10,12 @@ new Command()
   .option('-d, --dry-run', 'Output results without running the migrations')
   .option('-c, --config <path>', 'Path to the configuration file', DEFAULT_CONFIG_FILE)
   .action(async ({ config, dryRun }: { config?: string; dryRun?: boolean }) => {
-    const { client, table, dir } = loadConfig(config);
+    const { client, table, directory } = loadConfig(config);
 
     const pg = new Client(client);
     await pg.connect();
 
-    const migrations = new MigrationsReadable(pg, table, dir);
+    const migrations = new MigrationsReadable(pg, table, directory);
     const log = new Transform({
       objectMode: true,
       transform: (data: Migration, encoding, callback) => {
