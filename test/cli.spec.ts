@@ -5,7 +5,7 @@ import { Client } from 'pg';
 import { execSync } from 'child_process';
 
 const configFile = join(__dirname, 'cli.config.json');
-const config = loadConfig(configFile);
+const { client, directory } = loadConfig(configFile);
 
 let pg: Client;
 
@@ -16,25 +16,25 @@ const deleteMigrations = (dir: string): void =>
 
 describe('Cli', () => {
   beforeEach(async () => {
-    pg = new Client(config.client);
+    pg = new Client(client);
     await pg.connect();
     await pg.query('DROP TABLE IF EXISTS cli_testing; DROP TABLE IF EXISTS my_test;');
-    deleteMigrations(config.dir);
+    deleteMigrations(directory);
   });
 
   afterEach(async () => {
-    deleteMigrations(config.dir);
+    deleteMigrations(directory);
     await pg.query('DROP TABLE IF EXISTS cli_testing; DROP TABLE IF EXISTS my_test;');
     await pg.end();
   });
 
   it('Should use streams to execute migrations', async () => {
     writeFileSync(
-      join(config.dir, '2018-12-31T11:12:39.672Z_test-things.pgsql'),
+      join(directory, '2018-12-31T11:12:39.672Z_test-things.pgsql'),
       'CREATE TABLE my_test (id INTEGER PRIMARY KEY, name VARCHAR)',
     );
     writeFileSync(
-      join(config.dir, '2018-12-31T11:57:10.022Z_test-things2.pgsql'),
+      join(directory, '2018-12-31T11:57:10.022Z_test-things2.pgsql'),
       'ALTER TABLE my_test ADD COLUMN additional VARCHAR',
     );
 
@@ -65,7 +65,7 @@ describe('Cli', () => {
 
   it('Should use not run migrations on dry run', async () => {
     writeFileSync(
-      join(config.dir, '2018-12-31T11:12:39.672Z_test-things.pgsql'),
+      join(directory, '2018-12-31T11:12:39.672Z_test-things.pgsql'),
       'CREATE TABLE my_test (id INTEGER PRIMARY KEY, name VARCHAR)',
     );
 
@@ -81,7 +81,7 @@ describe('Cli', () => {
   });
 
   it('Should handle error in migration', async () => {
-    writeFileSync(join(config.dir, '2018-12-31T11:12:39.672Z_test-things.pgsql'), 'CREATE TABLE');
+    writeFileSync(join(directory, '2018-12-31T11:12:39.672Z_test-things.pgsql'), 'CREATE TABLE');
 
     expect(() => {
       execSync(`scripts/pg-migrate execute --config ${configFile}`);

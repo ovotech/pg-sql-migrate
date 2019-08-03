@@ -17,11 +17,17 @@ export class MigrationsWritable extends Writable {
     callback: (error?: Error | null) => void,
   ): Promise<void> {
     try {
+      await this.pg.query('BEGIN');
       await this.pg.query(migration.content);
       await this.pg.query(`INSERT INTO ${this.table} VALUES ($1)`, [migration.id]);
+      await this.pg.query('COMMIT');
       callback(null);
     } catch (error) {
-      callback(new MigrationError(error.message, migration));
+      try {
+        await this.pg.query('ROLLBACK');
+      } finally {
+        callback(new MigrationError(error.message, migration));
+      }
     }
   }
 }

@@ -68,7 +68,7 @@ describe('Migrate', () => {
   it('Should run migrate function with custom config', async () => {
     await migrate({
       client: 'postgresql://postgres:dev-pass@0.0.0.0:5432/postgres',
-      dir: 'test/migrations2',
+      directory: 'test/migrations2',
       table: 'testing2',
     });
 
