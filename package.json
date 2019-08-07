@@ -14,8 +14,6 @@
     "lint:eslint": "eslint '{src,test}/**/*.ts'",
     "lint": "yarn lint:prettier && yarn lint:eslint",
     "build": "tsc --declaration",
-    "build:cjs": "tsc --outDir dist/cjs/",
-    "build:es": "tsc --outDir dist/es/ --module esnext --declaration --declarationDir dist/types/",
     "pg-migrate": "ts-node src/cli/pg-migrate.ts",
     "pg-migrate-create": "ts-node src/cli/pg-migrate-create.ts",
     "pg-migrate-execute": "ts-node src/cli/pg-migrate-execute.ts"
