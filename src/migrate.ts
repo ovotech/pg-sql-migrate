@@ -23,11 +23,11 @@ export const loadConfig = (file = DEFAULT_CONFIG_FILE, env = process.env): Confi
   loadConfigFile<Config>({ file, env, defaults: CONFIG_DEFAULTS, required: ['client'] });
 
 export const migrate = async (
-  config?: Config | string,
+  config?: Partial<Config> | string,
   env = process.env,
 ): Promise<Migration[]> => {
   const { client, table, directory } =
-    typeof config === 'object' ? config : loadConfig(config, env);
+    typeof config === 'object' ? { ...CONFIG_DEFAULTS, ...config } : loadConfig(config, env);
 
   const pg = new Client(client);
   await pg.connect();

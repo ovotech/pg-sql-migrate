@@ -92,5 +92,5 @@ crash.log
 dist
 packages/*/dist
 .watchmanconfig
-
+reports
 .vscode

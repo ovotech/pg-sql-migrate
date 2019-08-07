@@ -14,6 +14,8 @@
     "lint:eslint": "eslint '{src,test}/**/*.ts'",
     "lint": "yarn lint:prettier && yarn lint:eslint",
     "build": "tsc --declaration",
+    "build:cjs": "tsc --outDir dist/cjs/",
+    "build:es": "tsc --outDir dist/es/ --module esnext --declaration --declarationDir dist/types/",
     "pg-migrate": "ts-node src/cli/pg-migrate.ts",
     "pg-migrate-create": "ts-node src/cli/pg-migrate-create.ts",
     "pg-migrate-execute": "ts-node src/cli/pg-migrate-execute.ts"
@@ -40,6 +42,7 @@
     "eslint": "^6.1.0",
     "eslint-config-prettier": "^6.0.0",
     "jest": "^24.5.0",
+    "jest-junit": "^7.0.0",
     "pg": "^7.9.0",
     "prettier": "^1.16.4",
     "ts-jest": "^24.0.0",
