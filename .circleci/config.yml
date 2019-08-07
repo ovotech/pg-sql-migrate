@@ -10,7 +10,7 @@ version: 2
 jobs:
   deploy:
     docker:
-      - image: circleci/node:8.10.0
+      - image: circleci/node:10.16
     steps:
       - checkout
       - *restore-yarn-cache
@@ -23,7 +23,7 @@ jobs:
 
   test:
     docker:
-      - image: circleci/node:8.10.0
+      - image: circleci/node:10.16
       - image: circleci/postgres:10-alpine
         environment:
           POSTGRES_PASSWORD: dev-pass
