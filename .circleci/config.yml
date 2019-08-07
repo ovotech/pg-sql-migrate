@@ -33,7 +33,6 @@ jobs:
       - *npmrc
       - run: yarn config set yarn-offline-mirror ~/.cache/yarn
       - run: yarn
-      - run: yarn build:es
       - run: mkdir -p reports/junit
       - run: yarn lint:prettier
       - run: yarn lint:eslint --format junit -o reports/junit/js-lint-results.xml
