@@ -2,7 +2,7 @@
   "name": "@ovotech/pg-sql-migrate",
   "description": "run migration scripts incrementally using postgres",
   "repository": "git@github.com:ovotech/pg-sql-migrate.git",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "main": "dist/index.js",
   "source": "src/index.ts",
   "types": "dist/index.d.ts",
@@ -25,28 +25,28 @@
   },
   "dependencies": {
     "@ovotech/config-file": "^1.0.0",
-    "commander": "^2.20.0"
+    "commander": "^4.1.1"
   },
   "peerDependencies": {
     "pg": "*"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.11",
-    "@types/node": "^12.6.9",
-    "@types/pg": "^7.4.14",
-    "@types/uuid": "^3.4.4",
-    "@typescript-eslint/eslint-plugin": "^1.13.0",
-    "@typescript-eslint/parser": "^1.13.0",
-    "eslint": "^6.1.0",
-    "eslint-config-prettier": "^6.0.0",
-    "jest": "^24.5.0",
-    "jest-junit": "^7.0.0",
-    "pg": "^7.9.0",
-    "prettier": "^1.16.4",
-    "ts-jest": "^24.0.0",
-    "ts-node": "^8.0.3",
-    "typescript": "^3.5.3",
-    "uuid": "^3.3.2"
+    "@types/jest": "^25.1.4",
+    "@types/node": "^13.9.0",
+    "@types/pg": "^7.14.2",
+    "@types/uuid": "^7.0.0",
+    "@typescript-eslint/eslint-plugin": "^2.23.0",
+    "@typescript-eslint/parser": "^2.23.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "jest": "^25.1.0",
+    "jest-junit": "^10.0.0",
+    "pg": "^7.18.2",
+    "prettier": "^1.19.1",
+    "ts-jest": "^25.2.1",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3",
+    "uuid": "^7.0.2"
   },
   "jest": {
     "preset": "./jest.config.json"

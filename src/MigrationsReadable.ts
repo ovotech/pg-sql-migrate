@@ -10,7 +10,7 @@ export const nameParts = (name: string): string[] => {
 };
 
 export class MigrationsReadable extends Readable {
-  private current: number = 0;
+  private current = 0;
   private migrationFiles?: string[];
   private pg: PGClient;
   private table: string;
