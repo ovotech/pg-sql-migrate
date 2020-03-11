@@ -2,8 +2,17 @@ import { join } from 'path';
 import { executeMigrations, MigrationsReadable, MigrationsWritable } from '../src';
 import { promisify } from 'util';
 import { pipeline } from 'stream';
+import { nameParts } from '../src/MigrationsReadable';
 
 describe('Unit test', () => {
+  it.each`
+    filename                                               | expected
+    ${'2020-01-20T14:47:35.151Z_test-name.pgsql'}          | ${['2020-01-20T14:47:35.151Z', 'test-name.pgsql']}
+    ${'2020-01-20T14:47:35.151Z_tino_add_user_role.pgsql'} | ${['2020-01-20T14:47:35.151Z', 'tino_add_user_role.pgsql']}
+  `('Should parse name parts of %s', ({ filename, expected }) => {
+    expect(nameParts(filename)).toEqual(expected);
+  });
+
   it('Should use streams to execute migrations', async () => {
     const pg = { query: jest.fn() };
 

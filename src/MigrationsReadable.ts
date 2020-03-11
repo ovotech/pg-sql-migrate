@@ -4,7 +4,10 @@ import { QueryResult } from 'pg';
 import { Readable } from 'stream';
 import { Migration, PGClient } from './types';
 
-export const nameParts = (name: string): string[] => name.split('_', 2);
+export const nameParts = (name: string): string[] => {
+  const [first, ...rest] = name.split('_');
+  return [first, rest.join('_')];
+};
 
 export class MigrationsReadable extends Readable {
   private current: number = 0;
