@@ -1,40 +1,32 @@
 {
   "name": "@ovotech/pg-sql-migrate",
-  "description": "run migration scripts incrementally using postgres",
+  "description": "migrate db using postgres sql files",
   "repository": "git@github.com:ovotech/pg-sql-migrate.git",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "main": "dist/index.js",
-  "source": "src/index.ts",
   "types": "dist/index.d.ts",
   "author": "Ivan Kerin <ikerin@gmail.com>",
   "license": "Apache-2.0",
   "scripts": {
     "test": "jest",
-    "lint:prettier": "prettier --list-different {src,test}/**/*.ts",
+    "lint:prettier": "prettier --list-different '{src,test}/**/*.ts'",
     "lint:eslint": "eslint '{src,test}/**/*.ts'",
     "lint": "yarn lint:prettier && yarn lint:eslint",
     "build": "tsc --declaration",
-    "pg-migrate": "ts-node src/cli/pg-migrate.ts",
-    "pg-migrate-create": "ts-node src/cli/pg-migrate-create.ts",
-    "pg-migrate-execute": "ts-node src/cli/pg-migrate-execute.ts"
+    "migrate": "node -r ts-node/register src/cli/migrate.ts"
   },
   "bin": {
-    "pg-migrate": "./scripts/pg-migrate",
-    "pg-migrate-execute": "./scripts/pg-migrate-execute",
-    "pg-migrate-create": "./scripts/pg-migrate-create"
+    "migrate": "./dist/cli/migrate.js"
   },
   "dependencies": {
     "@ovotech/config-file": "^1.0.0",
-    "commander": "^4.1.1"
-  },
-  "peerDependencies": {
-    "pg": "*"
+    "commander": "^4.1.1",
+    "pg": "^7.18.2"
   },
   "devDependencies": {
     "@types/jest": "^25.1.4",
     "@types/node": "^13.9.0",
     "@types/pg": "^7.14.2",
-    "@types/uuid": "^7.0.0",
     "@typescript-eslint/eslint-plugin": "^2.23.0",
     "@typescript-eslint/parser": "^2.23.0",
     "eslint": "^6.8.0",
@@ -45,8 +37,7 @@
     "prettier": "^1.19.1",
     "ts-jest": "^25.2.1",
     "ts-node": "^8.6.2",
-    "typescript": "^3.8.3",
-    "uuid": "^7.0.2"
+    "typescript": "^3.8.3"
   },
   "jest": {
     "preset": "./jest.config.json"

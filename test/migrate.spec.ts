@@ -21,32 +21,19 @@ describe('Migrate', () => {
   afterEach(() => pg.end());
 
   it('Should run migrate function', async () => {
-    const results = await migrate(config);
+    const logger = { info: jest.fn(), error: jest.fn() };
+    await migrate({ config, logger });
 
     const finishedMigrations = await pg.query('SELECT id FROM testing');
     const migratedTable = await pg.query('SELECT * FROM my_test');
 
-    expect(results).toEqual([
-      {
-        id: '2018-12-31T11:12:39.672Z',
-        name: 'test-things.pgsql',
-        content: 'CREATE TABLE my_test (id INTEGER PRIMARY KEY, name VARCHAR);\n',
-      },
-      {
-        id: '2018-12-31T11:57:10.022Z',
-        name: 'test-things2.pgsql',
-        content: 'ALTER TABLE my_test ADD COLUMN additional VARCHAR;\n',
-      },
-      {
-        id: '2018-12-31T12:10:49.562Z',
-        name: 'test-other.pgsql',
-        content: 'ALTER TABLE my_test ADD COLUMN additional_2 VARCHAR;\n',
-      },
-      {
-        id: '2019-01-02T08:36:08.858Z',
-        name: 'test-other-3.pgsql',
-        content: 'ALTER TABLE my_test ADD COLUMN additional_3 VARCHAR;\n',
-      },
+    expect(logger.info.mock.calls).toEqual([
+      ['Executing 4 new migrations'],
+      ['Executing [2018-12-31T11:12:39.672Z] test-things.pgsql'],
+      ['Executing [2018-12-31T11:57:10.022Z] test-things2.pgsql'],
+      ['Executing [2018-12-31T12:10:49.562Z] test-other.pgsql'],
+      ['Executing [2019-01-02T08:36:08.858Z] test-other-3.pgsql'],
+      ['Successfully executed 4 new migrations'],
     ]);
 
     expect(finishedMigrations.rows).toEqual([
@@ -66,10 +53,14 @@ describe('Migrate', () => {
   });
 
   it('Should run migrate function with custom config', async () => {
+    const logger = { info: jest.fn(), error: jest.fn() };
     await migrate({
-      client: 'postgresql://postgres:dev-pass@0.0.0.0:5432/postgres',
-      directory: 'test/migrations2',
-      table: 'testing2',
+      config: {
+        client: 'postgresql://postgres:dev-pass@0.0.0.0:5432/postgres',
+        directory: 'test/migrations2',
+        table: 'testing2',
+      },
+      logger,
     });
 
     const finishedMigrations = await pg.query('SELECT id FROM testing2');

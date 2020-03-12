@@ -37,13 +37,19 @@ Instead of a string you can use an object. This is passed directly to pg https:/
 To create new migrations in the designated directory you can run:
 
 ```bash
-yarn pg-migrate create my_migration
+yarn migrate create my_migration
 ```
 
 This will create a file `migrations/<timestamp>_my_migration.pgsql` that you can place raw sql into. After that, you can run the migration(s) by calling
 
 ```bash
-yarn pg-migrate execute
+yarn migrate execute
+```
+
+or just
+
+```bash
+yarn migrate
 ```
 
 Then in your code you can:
@@ -51,7 +57,7 @@ Then in your code you can:
 ```typescript
 import { migrate } from '@ovotech/pg-sql-migrate';
 
-const results = await migrate();
+await migrate();
 ```
 
 ## Environment variables
@@ -74,37 +80,28 @@ You can choose a different location for the config file, or to just input its co
 
 ```typescript
 import { migrate } from '@ovotech/pg-sql-migrate';
+import { createLogger } from 'winston';
 
-const results = await migrate();
+await migrate();
 
-const results = await migrate('custom-config.json');
+await migrate({ config: 'custom-config.json' });
 
-const results = await migrate({
-  client: 'postgresql://postgres:dev-pass@0.0.0.0:5432/postgres',
-  // Custom table location
-  table: 'my_table',
-  // Custom directory for migration files
-  directory: 'migrations_dir',
+await migrate({
+  config: {
+    client: 'postgresql://postgres:dev-pass@0.0.0.0:5432/postgres',
+    // Custom table location
+    table: 'my_table',
+    // Custom directory for migration files
+    directory: 'migrations_dir',
+  },
 });
-```
 
-## Low level node streams
+// Custom logger
+const logger = createLogger();
+await migrate({ logger });
 
-If you want to use the underlying streams themselves you can do so:
-
-```typescript
-import { MigrationsReadable, MigrationsWritable } from '@ovotech/pg-sql-migrate';
-import { Client } from 'pg';
-
-const pg = new Client('postgresql://postgres:dev-pass@0.0.0.0:5432/postgres');
-
-// Read the migration files and stream the migrations that have not yet run.
-const migrations = new MigrationsReadable(pg, 'migrations_table', 'migrations_dir');
-
-// Execute the migrations with the pg client, and save their status to the migrations table
-const sink = new MigrationsWritable(pg, 'migrations_table');
-
-migrations.pipe(sink).on('finish', () => console.log('Finished'));
+// Dry run
+await migrate({ dryRun: true });
 ```
 
 ## Running the tests

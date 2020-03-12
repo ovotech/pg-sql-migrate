@@ -1,37 +1,151 @@
 import { loadConfigFile } from '@ovotech/config-file';
 import { Client } from 'pg';
-import { MigrationsReadable, MigrationsWritable } from './';
-import { Config, CONFIG_DEFAULTS, DEFAULT_CONFIG_FILE, Migration, PGClient } from './types';
-import { pipeline } from 'stream';
-import { promisify } from 'util';
-import { MigrationsCollectTransform } from './MigrationsCollectTransform';
+import { MigrationError } from './';
+import {
+  Config,
+  CONFIG_DEFAULTS,
+  DEFAULT_CONFIG_FILE,
+  Migration,
+  MigrationClient,
+  MigrationLogger,
+} from './types';
+import { readdirSync, readFileSync } from 'fs';
+import { join } from 'path';
 
-export const executeMigrations = async (
-  pg: PGClient,
-  table: string,
-  directory: string,
-): Promise<Migration[]> => {
-  const read = new MigrationsReadable(pg, table, directory);
-  const sink = new MigrationsWritable(pg, table);
-  const collect = new MigrationsCollectTransform();
+export const filenameParts = (filename: string): { name: string; id: string; filename: string } => {
+  const [id, ...name] = filename.split('_');
+  return { filename, id, name: name.join('_') };
+};
 
-  await promisify(pipeline)(read, collect, sink);
-  return collect.migrations;
+export const readMigrations = ({
+  directory,
+  executedIds = [],
+}: {
+  directory: string;
+  executedIds?: string[];
+}): Migration[] =>
+  readdirSync(directory)
+    .filter(file => file.endsWith('.pgsql'))
+    .map(file => filenameParts(file))
+    .filter(({ id }) => !executedIds.includes(id))
+    .map(({ filename, id, name }) => {
+      const content = readFileSync(join(directory, filename)).toString();
+      return { id, name, content };
+    });
+
+export const readExecutedIds = async ({
+  db,
+  table,
+}: {
+  db: MigrationClient;
+  table: string;
+}): Promise<string[]> => {
+  const tableName = db.escapeIdentifier(table);
+  await db.query(`CREATE TABLE IF NOT EXISTS ${tableName} (id VARCHAR PRIMARY KEY)`);
+  const idsResult = await db.query(`SELECT id FROM ${tableName}`);
+  return idsResult.rows.map(row => row.id);
+};
+
+export const executeMigrations = async ({
+  db,
+  table,
+  logger,
+  migrations,
+}: {
+  db: MigrationClient;
+  table: string;
+  logger: MigrationLogger;
+  migrations: Migration[];
+}): Promise<void> => {
+  for (const migration of migrations) {
+    try {
+      logger.info(`Executing [${migration.id}] ${migration.name}`);
+      await db.query('BEGIN');
+      await db.query(migration.content);
+      await db.query(`INSERT INTO ${db.escapeIdentifier(table)} VALUES ($1);`, [migration.id]);
+      await db.query('COMMIT');
+    } catch (error) {
+      try {
+        await db.query('ROLLBACK');
+      } finally {
+        throw new MigrationError(error.message, migration);
+      }
+    }
+  }
+};
+
+export const readNewMigrations = async ({
+  db,
+  table,
+  directory,
+}: {
+  db: MigrationClient;
+  table: string;
+  directory: string;
+}): Promise<Migration[]> => {
+  const executedIds = await readExecutedIds({ db, table });
+  return readMigrations({ directory, executedIds });
 };
 
 export const loadConfig = (file = DEFAULT_CONFIG_FILE, env = process.env): Config =>
   loadConfigFile<Config>({ file, env, defaults: CONFIG_DEFAULTS, required: ['client'] });
 
-export const migrate = async (
-  config?: Partial<Config> | string,
+export const readAndExecuteMigrations = async ({
+  table,
+  directory,
+  db,
+  logger = console,
+  dryRun = false,
+}: {
+  db: MigrationClient;
+  table: string;
+  directory: string;
+  logger?: MigrationLogger;
+  dryRun?: boolean;
+}): Promise<void> => {
+  try {
+    const migrations = await readNewMigrations({ db, table, directory });
+    logger.info(
+      migrations.length
+        ? `Executing ${migrations.length} new migrations`
+        : 'No new migrations found',
+    );
+    if (!dryRun) {
+      await executeMigrations({ db, table, migrations, logger });
+    }
+    logger.info(`Successfully executed ${migrations.length} new migrations`);
+  } catch (error) {
+    if (error instanceof MigrationError) {
+      logger.error(
+        `Error executing [${error.migration.id}] ${error.migration.name}: ${error.message}`,
+      );
+    }
+    throw error;
+  }
+};
+
+export interface Migrate {
+  config?: Partial<Config> | string;
+  env?: NodeJS.ProcessEnv;
+  logger?: MigrationLogger;
+  dryRun?: boolean;
+}
+
+export const migrate = async ({
+  config,
   env = process.env,
-): Promise<Migration[]> => {
+  logger = console,
+  dryRun = false,
+}: Migrate = {}): Promise<void> => {
   const { client, table, directory } =
     typeof config === 'object' ? { ...CONFIG_DEFAULTS, ...config } : loadConfig(config, env);
 
-  const pg = new Client(client);
-  await pg.connect();
-  const results = await executeMigrations(pg, table, directory);
-  await pg.end();
-  return results;
+  const db = new Client(client);
+  await db.connect();
+
+  try {
+    await readAndExecuteMigrations({ db, table, directory, logger, dryRun });
+  } finally {
+    await db.end();
+  }
 };

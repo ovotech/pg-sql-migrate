@@ -6,17 +6,20 @@ export interface Config {
   table: string;
 }
 
+export interface MigrationLogger {
+  info: (message: string) => unknown;
+  error: (message: string) => unknown;
+}
+
 export interface Migration {
   id: string;
   name: string;
   content: string;
 }
 
-export interface PGClient {
-  query: ClientBase['query'];
-}
+export type MigrationClient = Pick<ClientBase, 'query' | 'escapeIdentifier'>;
 
-export const DEFAULT_CONFIG_FILE = 'pg-sql-migrate.config.json';
+export const DEFAULT_CONFIG_FILE = 'migrate.config.json';
 
 export const CONFIG_DEFAULTS = {
   directory: 'migrations',
