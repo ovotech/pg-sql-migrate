@@ -13,7 +13,7 @@ add a configuration file, which by default is `./pg-sql-migrate.config.json` to 
 ```json
 {
   "client": "postgresql://postgres:dev-pass@0.0.0.0:5432/postgres",
-  "directory": "migrations"
+  "directory": "migrations",
   "table" "migrations"
 }
 ```
