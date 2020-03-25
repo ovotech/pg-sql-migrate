@@ -1,7 +1,6 @@
 import { loadConfig } from '../src';
 import { execute } from '../src/commands/execute';
 import { create } from '../src/commands/create';
-import { Command } from 'commander';
 import { readdirSync, unlinkSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { Client } from 'pg';
@@ -13,8 +12,8 @@ let pg: Client;
 
 const deleteMigrations = (dir: string): void =>
   readdirSync(dir)
-    .filter(file => file.endsWith('pgsql'))
-    .forEach(file => unlinkSync(join(dir, file)));
+    .filter((file) => file.endsWith('pgsql'))
+    .forEach((file) => unlinkSync(join(dir, file)));
 
 describe('Cli', () => {
   beforeEach(async () => {
@@ -42,7 +41,7 @@ describe('Cli', () => {
       'ALTER TABLE my_test2 ADD COLUMN additional VARCHAR',
     );
 
-    await execute(new Command(), logger).parseAsync(['migrate', 'execute', '--config', configFile]);
+    await execute(logger).parseAsync(['migrate', 'execute', '--config', configFile]);
 
     expect(logger.info).toHaveBeenCalledWith(
       `Executing [2018-12-31T11:12:39.672Z] test-things.pgsql`,
@@ -51,7 +50,7 @@ describe('Cli', () => {
       `Executing [2018-12-31T11:57:10.022Z] test-things2.pgsql`,
     );
 
-    await create(new Command(), logger).parseAsync([
+    await create(logger).parseAsync([
       'migrate',
       'create',
       '--config',
@@ -62,7 +61,7 @@ describe('Cli', () => {
 
     expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('Created'));
 
-    await execute(new Command(), logger).parseAsync(['migrate', 'execute', '--config', configFile]);
+    await execute(logger).parseAsync(['migrate', 'execute', '--config', configFile]);
 
     expect(logger.info).toHaveBeenCalledWith('Executing 1 new migrations');
 
@@ -91,13 +90,7 @@ describe('Cli', () => {
       'CREATE TABLE my_test (id INTEGER PRIMARY KEY, name VARCHAR)',
     );
 
-    await execute(new Command(), logger).parseAsync([
-      'migrate',
-      'execute',
-      '--config',
-      configFile,
-      '--dry-run',
-    ]);
+    await execute(logger).parseAsync(['migrate', 'execute', '--config', configFile, '--dry-run']);
 
     expect(logger.info).toHaveBeenCalledWith('Executing 1 new migrations');
 
@@ -114,12 +107,7 @@ describe('Cli', () => {
     const logger = { info: jest.fn(), error: jest.fn() };
     writeFileSync(join(directory, '2018-12-31T11:12:39.672Z_test-things.pgsql'), 'CREATE TABLE');
 
-    const result = execute(new Command(), logger).parseAsync([
-      'migrate',
-      'execute',
-      '--config',
-      configFile,
-    ]);
+    const result = execute(logger).parseAsync(['migrate', 'execute', '--config', configFile]);
 
     await expect(result).rejects.toEqual(new Error('syntax error at end of input'));
 

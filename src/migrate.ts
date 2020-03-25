@@ -25,8 +25,8 @@ export const readMigrations = ({
   executedIds?: string[];
 }): Migration[] =>
   readdirSync(directory)
-    .filter(file => file.endsWith('.pgsql'))
-    .map(file => filenameParts(file))
+    .filter((file) => file.endsWith('.pgsql'))
+    .map((file) => filenameParts(file))
     .filter(({ id }) => !executedIds.includes(id))
     .map(({ filename, id, name }) => {
       const content = readFileSync(join(directory, filename)).toString();
@@ -43,7 +43,7 @@ export const readExecutedIds = async ({
   const tableName = db.escapeIdentifier(table);
   await db.query(`CREATE TABLE IF NOT EXISTS ${tableName} (id VARCHAR PRIMARY KEY)`);
   const idsResult = await db.query(`SELECT id FROM ${tableName}`);
-  return idsResult.rows.map(row => row.id);
+  return idsResult.rows.map((row) => row.id);
 };
 
 export const executeMigrations = async ({

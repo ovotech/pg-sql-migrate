@@ -1,9 +1,9 @@
 import { DEFAULT_CONFIG_FILE, MigrationLogger } from '../types';
-import { Command } from 'commander';
+import * as commander from 'commander';
 import { migrate } from '../migrate';
 
-export const execute = (command: Command, logger: MigrationLogger = console): Command =>
-  command
+export const execute = (logger: MigrationLogger = console): commander.Command =>
+  new commander.Command()
     .option('-d, --dry-run', 'Output results without running the migrations')
     .option('-c, --config <path>', 'Path to the configuration file', DEFAULT_CONFIG_FILE)
     .action(async ({ config, dryRun }: { config?: string; dryRun?: boolean }) => {
