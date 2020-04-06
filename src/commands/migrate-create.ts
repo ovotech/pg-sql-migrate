@@ -4,8 +4,9 @@ import { loadConfig } from '../migrate';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
 
-export const create = (logger: MigrationLogger = console): commander.Command =>
-  new commander.Command()
+export const migrateCreate = (logger: MigrationLogger = console): commander.Command =>
+  commander
+    .createCommand('create')
     .arguments('<name> [content]')
     .option('-c, --config <path>', 'Path to the configuration file', DEFAULT_CONFIG_FILE)
     .action(async (name: string, content: string | undefined, { config }: { config?: string }) => {
