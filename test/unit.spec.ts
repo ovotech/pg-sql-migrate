@@ -11,7 +11,7 @@ describe('Unit test', () => {
   });
 
   it('Should use streams to execute migrations', async () => {
-    const db = { query: jest.fn(), escapeIdentifier: (str: string): string => str };
+    const db = { query: jest.fn(), escapeIdentifier: (str: string): string => str, end: jest.fn() };
     const logger = { info: jest.fn(), error: jest.fn() };
 
     db.query
@@ -43,7 +43,7 @@ describe('Unit test', () => {
   });
 
   it('Should await migrate function to run streams', async () => {
-    const db = { query: jest.fn(), escapeIdentifier: (str: string): string => str };
+    const db = { query: jest.fn(), escapeIdentifier: (str: string): string => str, end: jest.fn() };
     const logger = { info: jest.fn(), error: jest.fn() };
 
     db.query
