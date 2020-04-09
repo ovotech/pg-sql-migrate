@@ -9,11 +9,19 @@ export const migrateCreate = (logger: MigrationLogger = console): commander.Comm
     .createCommand('create')
     .arguments('<name> [content]')
     .option('-c, --config <path>', 'Path to the configuration file', DEFAULT_CONFIG_FILE)
-    .action(async (name: string, content: string | undefined, { config }: { config?: string }) => {
-      const { directory } = loadConfig(config);
-      const file = `${new Date().toISOString()}_${name}.pgsql`;
+    .option('--config-directory <path>', 'Specify inline the directory of migrations')
+    .action(
+      async (
+        name: string,
+        content: string | undefined,
+        { config, configDirectory }: { config?: string; configDirectory?: string },
+      ) => {
+        const { directory } = loadConfig(config);
+        const modifiedDirectory = configDirectory ?? directory;
+        const file = `${new Date().toISOString()}_${name}.pgsql`;
 
-      writeFileSync(join(directory, file), content || '');
+        writeFileSync(join(modifiedDirectory, file), content || '');
 
-      logger.info(`Created ${file}`);
-    });
+        logger.info(`Created ${file}`);
+      },
+    );

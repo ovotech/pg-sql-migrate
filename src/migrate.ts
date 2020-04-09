@@ -143,9 +143,15 @@ export const migrate = async ({
   const db = new Client(client);
   await db.connect();
 
+  process.on('SIGTERM', async () => {
+    await db.query('DISCARD ALL');
+    await db.end();
+  });
+
   try {
     await readAndExecuteMigrations({ db, table, directory, logger, dryRun });
   } finally {
+    await db.query('DISCARD ALL');
     await db.end();
   }
 };

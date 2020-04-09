@@ -46,13 +46,13 @@ This will create a file `migrations/<timestamp>_my_migration.pgsql` that you can
 yarn migrate execute
 ```
 
-or just
+You can also specify the configuration as cli options
 
 ```bash
-yarn migrate
+yarn migrate execute --config-directory ~/my/dir/migrations --config-table my-table --config-client postgresql://0.0.0.0:5432/my-database
 ```
 
-Then in your code you can:
+In you code you can run it as a library
 
 ```typescript
 import { migrate } from '@ovotech/pg-sql-migrate';

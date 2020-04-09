@@ -1,4 +1,4 @@
-import { ClientConfig, ClientBase } from 'pg';
+import { ClientConfig, Client } from 'pg';
 
 export interface Config {
   client: ClientConfig | string;
@@ -17,7 +17,7 @@ export interface Migration {
   content: string;
 }
 
-export type MigrationClient = Pick<ClientBase, 'query' | 'escapeIdentifier'>;
+export type MigrationClient = Pick<Client, 'query' | 'escapeIdentifier' | 'end'>;
 
 export const DEFAULT_CONFIG_FILE = 'migrate.config.json';
 
