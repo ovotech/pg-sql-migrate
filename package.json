@@ -21,7 +21,7 @@
   "dependencies": {
     "@ovotech/config-file": "^1.0.0",
     "commander": "^5.0.0",
-    "pg": "^8.0.1"
+    "pg": "^8.0.2"
   },
   "devDependencies": {
     "@types/jest": "^25.2.1",
