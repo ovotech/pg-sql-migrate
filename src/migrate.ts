@@ -9,7 +9,7 @@ import {
   MigrationClient,
   MigrationLogger,
 } from './types';
-import { readdirSync, readFileSync } from 'fs';
+import { readdirSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
 export const filenameParts = (filename: string): { name: string; id: string; filename: string } => {
@@ -87,8 +87,33 @@ export const readNewMigrations = async ({
   return readMigrations({ directory, executedIds });
 };
 
-export const loadConfig = (file = DEFAULT_CONFIG_FILE, env = process.env): Config =>
-  loadConfigFile<Config>({ file, env, defaults: CONFIG_DEFAULTS, required: ['client'] });
+export const loadConfig = (
+  file = DEFAULT_CONFIG_FILE,
+  env = process.env,
+  { client, directory, table }: Partial<Config> = {},
+): Config => {
+  if (client !== undefined) {
+    const loadConfig = existsSync(file)
+      ? loadConfigFile<Config>({ file, env, defaults: CONFIG_DEFAULTS, required: ['client'] })
+      : CONFIG_DEFAULTS;
+
+    return {
+      directory: directory ?? loadConfig.directory,
+      table: table ?? loadConfig.table,
+      client,
+    };
+  } else {
+    return loadConfigFile<Config>({ file, env, defaults: CONFIG_DEFAULTS, required: ['client'] });
+  }
+};
+
+export interface RunAndExecuteMigrations {
+  db: MigrationClient;
+  table: string;
+  directory: string;
+  logger?: MigrationLogger;
+  dryRun?: boolean;
+}
 
 export const readAndExecuteMigrations = async ({
   table,
@@ -96,13 +121,7 @@ export const readAndExecuteMigrations = async ({
   db,
   logger = console,
   dryRun = false,
-}: {
-  db: MigrationClient;
-  table: string;
-  directory: string;
-  logger?: MigrationLogger;
-  dryRun?: boolean;
-}): Promise<void> => {
+}: RunAndExecuteMigrations): Promise<void> => {
   try {
     const migrations = await readNewMigrations({ db, table, directory });
     logger.info(
@@ -144,14 +163,15 @@ export const migrate = async ({
   await db.connect();
 
   process.on('SIGTERM', async () => {
-    await db.query('DISCARD ALL');
+    logger.info('SIGTERM Encountered, discarding running migration');
+    await db.query('ROLLBACK');
     await db.end();
+    logger.info('Graceful shutdown successful');
   });
 
   try {
     await readAndExecuteMigrations({ db, table, directory, logger, dryRun });
   } finally {
-    await db.query('DISCARD ALL');
     await db.end();
   }
 };

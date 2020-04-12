@@ -16,11 +16,10 @@ export const migrateCreate = (logger: MigrationLogger = console): commander.Comm
         content: string | undefined,
         { config, configDirectory }: { config?: string; configDirectory?: string },
       ) => {
-        const { directory } = loadConfig(config);
-        const modifiedDirectory = configDirectory ?? directory;
+        const { directory } = loadConfig(config, process.env, { directory: configDirectory });
         const file = `${new Date().toISOString()}_${name}.pgsql`;
 
-        writeFileSync(join(modifiedDirectory, file), content || '');
+        writeFileSync(join(directory, file), content || '');
 
         logger.info(`Created ${file}`);
       },
