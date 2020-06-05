@@ -63,12 +63,12 @@ export const executeMigrations = async ({
   for (const migration of migrations) {
     try {
       logger.info(`Executing [${migration.id}] ${migration.name}`);
-      if (isTransactionDisabled(migration.content)) {
-        await db.query(migration.content);
-      } else {
+      if (!isTransactionDisabled(migration.content)) {
         await db.query('BEGIN');
-        await db.query(migration.content);
-        await db.query(`INSERT INTO ${db.escapeIdentifier(table)} VALUES ($1);`, [migration.id]);
+      }
+      await db.query(migration.content);
+      await db.query(`INSERT INTO ${db.escapeIdentifier(table)} VALUES ($1);`, [migration.id]);
+      if (!isTransactionDisabled(migration.content)) {
         await db.query('COMMIT');
       }
     } catch (error) {

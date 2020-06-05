@@ -87,8 +87,13 @@ describe('Migrate', () => {
       logger,
     });
 
+    const finishedMigrations = await pg.query('SELECT id FROM testing3');
     const migratedEnum = await pg.query('SELECT enum_range(NULL::my_type)');
 
+    expect(finishedMigrations.rows).toEqual([
+      { id: '2018-12-30T11:12:39.672Z' },
+      { id: '2018-12-31T12:12:39.672Z' },
+    ]);
     expect(migratedEnum.rows).toEqual([{ enum_range: '{VAL1,VAL2}' }]);
   });
 });
