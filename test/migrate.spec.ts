@@ -13,8 +13,10 @@ describe('Migrate', () => {
     await pg.query(`
       DROP TABLE IF EXISTS testing;
       DROP TABLE IF EXISTS testing2;
+      DROP TABLE IF EXISTS testing3;
       DROP TABLE IF EXISTS my_test;
       DROP TABLE IF EXISTS my_test2;
+      DROP TYPE IF EXISTS my_type;
     `);
   });
 
@@ -72,5 +74,21 @@ describe('Migrate', () => {
       expect.objectContaining({ name: 'id' }),
       expect.objectContaining({ name: 'name' }),
     ]);
+  });
+
+  it('Should disable transactions for some migrations', async () => {
+    const logger = { info: jest.fn(), error: jest.fn() };
+    await migrate({
+      config: {
+        client: 'postgresql://postgres:dev-pass@0.0.0.0:5432/postgres',
+        directory: 'test/migrations-with-dsiabled-transactions',
+        table: 'testing3',
+      },
+      logger,
+    });
+
+    const migratedEnum = await pg.query('SELECT enum_range(NULL::my_type)');
+
+    expect(migratedEnum.rows).toEqual([{ enum_range: '{VAL1,VAL2}' }]);
   });
 });

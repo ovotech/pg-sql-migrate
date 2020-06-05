@@ -1,0 +1,2 @@
+-- pg-sql-migrate: DISABLE TRANSACTION
+ALTER TYPE my_type ADD VALUE 'VAL2' AFTER 'VAL1';
