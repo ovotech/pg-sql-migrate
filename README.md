@@ -104,6 +104,15 @@ await migrate({ logger });
 await migrate({ dryRun: true });
 ```
 
+## Distabling transactions for some migrations
+
+By default migrations are wrapped in transactions, but there are some PG operations that cannot be performed inside a transaction. You can disable this for a specific transaction by adding a prefix
+
+```sql
+-- pg-sql-migrate: DISABLE TRANSACTION
+ALTER TYPE my_type ADD VALUE 'VAL2' AFTER 'VAL1';
+```
+
 ## Running the tests
 
 You can run the tests with:

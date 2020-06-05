@@ -1,0 +1,1 @@
+CREATE TYPE my_type AS ENUM ('VAL1');
