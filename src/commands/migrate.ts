@@ -24,4 +24,4 @@ Example:
 `,
     )
     .addCommand(migrateCreate(logger))
-    .addCommand(migrateExecute(logger));
+    .addCommand(migrateExecute(logger), { isDefault: true });
