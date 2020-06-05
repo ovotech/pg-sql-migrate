@@ -61,7 +61,7 @@ describe('Cli', () => {
 
     expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('Created'));
 
-    await migrate(logger).parseAsync(['node', 'migrate', 'execute', '--config', configFile]);
+    await migrate(logger).parseAsync(['node', 'migrate', '--config', configFile]);
 
     expect(logger.info).toHaveBeenCalledWith('Executing 1 new migrations');
 
