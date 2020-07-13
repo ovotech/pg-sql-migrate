@@ -171,16 +171,19 @@ export const migrate = async ({
   const db = new Client(client);
   await db.connect();
 
-  process.on('SIGTERM', async () => {
+  const rollback = async (): Promise<void> => {
     logger.info('SIGTERM Encountered, discarding running migration');
     await db.query('ROLLBACK');
     await db.end();
     logger.info('Graceful shutdown successful');
-  });
+  };
+
+  process.on('SIGTERM', rollback);
 
   try {
     await readAndExecuteMigrations({ db, table, directory, logger, dryRun });
   } finally {
     await db.end();
+    process.off('SIGTERM', rollback);
   }
 };
