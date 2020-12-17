@@ -6,7 +6,7 @@ import { migrateExecute } from './migrate-execute';
 export const migrate = (logger: MigrationLogger = console): commander.Command =>
   commander
     .createCommand('migrate')
-    .version('3.0.0')
+    .version('3.2.0')
     .description(
       `PG Migrate CLI - A very small cli tool for running sql migrations with postgres.
 
