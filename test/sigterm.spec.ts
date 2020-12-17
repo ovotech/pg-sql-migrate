@@ -20,7 +20,7 @@ const waitForText = async (text: string, stdout: Readable): Promise<void> => {
     const onMigrationReached = (chunk: string): void => {
       if (chunk.includes(text)) {
         stdout.off('data', onMigrationReached);
-        resolve();
+        resolve(undefined);
       }
     };
 
@@ -58,7 +58,7 @@ describe('Cli', () => {
     const command = `yarn migrate execute --config-client "${client}" --config-directory "${configDirectory}" --config-table "sigterm_testing"`;
 
     await new Promise(async (commandReosolve) => {
-      const commandProcess = exec(command, { cwd: root }, () => commandReosolve());
+      const commandProcess = exec(command, { cwd: root }, () => commandReosolve(undefined));
 
       const { stdout, stderr } = commandProcess;
 
