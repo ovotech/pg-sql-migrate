@@ -16,7 +16,8 @@
     "migrate": "node -r ts-node/register src/cli.ts"
   },
   "bin": {
-    "migrate": "./scripts/migrate"
+    "migrate": "./scripts/migrate",
+    "pg-sql-migrate": "./scripts/migrate"
   },
   "dependencies": {
     "@ovotech/config-file": "^1.0.0",
