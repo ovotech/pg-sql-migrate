@@ -43,7 +43,6 @@ describe('Cli', () => {
   });
 
   it('Should drop all migrations', async () => {
-    jest.setTimeout(20000);
     writeFileSync(
       join(directory, '2018-12-31T11:12:39.672Z_test-sigterm1.pgsql'),
       'CREATE TABLE sigterm_test2 (id INTEGER PRIMARY KEY, name VARCHAR)',
@@ -74,5 +73,5 @@ describe('Cli', () => {
 
       await waitForText('Graceful shutdown successful', stdout);
     });
-  });
+  }, 20000);
 });
