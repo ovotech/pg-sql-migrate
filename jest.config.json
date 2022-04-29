@@ -3,7 +3,8 @@
     "^.+\\.tsx?$": "ts-jest"
   },
   "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-  "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
+  "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "tsx", "json", "node"],
   "testURL": "http://localhost/",
-  "testEnvironment": "node"
+  "testEnvironment": "node",
+  "modulePathIgnorePatterns": ["<rootDir>/dist/"]
 }
