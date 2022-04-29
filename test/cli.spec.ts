@@ -125,7 +125,7 @@ describe('Cli', () => {
     await expect(result).rejects.toEqual(new Error('error: syntax error at end of input'));
 
     expect(logger.error).toHaveBeenCalledWith(
-      'Error executing [2018-12-31T11:12:39.672Z] test-things.pgsql: syntax error at end of input',
+      'Error executing [2018-12-31T11:12:39.672Z] test-things.pgsql: error: syntax error at end of input',
     );
   });
 });
