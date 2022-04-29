@@ -77,7 +77,7 @@ export const executeMigrations = async ({
           await db.query('ROLLBACK');
         }
       } finally {
-        throw new MigrationError(error.message, migration);
+        throw new MigrationError(String(error), migration);
       }
     }
   }
