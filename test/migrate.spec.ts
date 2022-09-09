@@ -96,4 +96,23 @@ describe('Migrate', () => {
     ]);
     expect(migratedEnum.rows).toEqual([{ enum_range: '{VAL1,VAL2}' }]);
   });
+
+  it('Should run migrate upto a given id', async () => {
+    const logger = { info: jest.fn(), error: jest.fn() };
+    await migrate({ config, logger, upTo: '2018-12-31T11:57:10.022Z' });
+
+    const finishedMigrations = await pg.query('SELECT id FROM testing');
+
+    expect(logger.info.mock.calls).toEqual([
+      ['Executing 2 new migrations'],
+      ['Executing [2018-12-31T11:12:39.672Z] test-things.pgsql'],
+      ['Executing [2018-12-31T11:57:10.022Z] test-things2.pgsql'],
+      ['Successfully executed 2 new migrations'],
+    ]);
+
+    expect(finishedMigrations.rows).toEqual([
+      { id: '2018-12-31T11:12:39.672Z' },
+      { id: '2018-12-31T11:57:10.022Z' },
+    ]);
+  });
 });

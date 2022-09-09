@@ -12,7 +12,7 @@ add a configuration file, which by default is `./pg-sql-migrate.config.json` to 
 
 ```json
 {
-  "client": "postgresql://postgres:dev-pass@0.0.0.0:5432/postgres",
+  "client": "postgresql://postgres:dev-pass@localhost:5432/postgres",
   "directory": "migrations",
   "table": "migrations"
 }
@@ -27,7 +27,7 @@ Instead of a string you can use an object. This is passed directly to pg https:/
   "client": {
     "user": "postgres",
     "password": "dev-pass",
-    "host": "0.0.0.0",
+    "host": "localhost",
     "database": "postgres",
     "port": 5432
   }
@@ -49,7 +49,7 @@ yarn migrate execute
 You can also specify the configuration as cli options
 
 ```bash
-yarn migrate execute --config-directory ~/my/dir/migrations --config-table my-table --config-client postgresql://0.0.0.0:5432/my-database
+yarn migrate execute --config-directory ~/my/dir/migrations --config-table my-table --config-client postgresql://localhost:5432/my-database
 ```
 
 In you code you can run it as a library
@@ -68,7 +68,7 @@ For example, if you have the env var `PG_USER_PASS` setup, you can access it wit
 
 ```json
 {
-  "client": "postgresql://postgres:${PG_USER_PASS}@0.0.0.0:5432/postgres",
+  "client": "postgresql://postgres:${PG_USER_PASS}@localhost:5432/postgres",
   "directory": "migrations"
   "table" "migrations"
 }
@@ -88,7 +88,7 @@ await migrate({ config: 'custom-config.json' });
 
 await migrate({
   config: {
-    client: 'postgresql://postgres:dev-pass@0.0.0.0:5432/postgres',
+    client: 'postgresql://postgres:dev-pass@localhost:5432/postgres',
     // Custom table location
     table: 'my_table',
     // Custom directory for migration files

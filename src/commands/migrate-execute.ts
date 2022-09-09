@@ -8,6 +8,7 @@ export interface MigrateExecuteArguments {
   configDirectory?: string;
   configTable?: string;
   configClient?: string;
+  upTo?: string;
 }
 
 export const migrateExecute = (logger: MigrationLogger = console): commander.Command =>
@@ -18,12 +19,17 @@ export const migrateExecute = (logger: MigrationLogger = console): commander.Com
     .option('-D, --config-directory <path>', 'Specify inline the directory of migrations')
     .option('-P, --config-table <path>', 'Specify inline the table used migrations')
     .option('-C, --config-client <path>', 'Specify inline the connection string for the client')
+    .option(
+      '-u, --up-to <upTo>',
+      'Run only migrations up to the id of the specified one (including)',
+    )
     .action(
       async ({
         config,
         configDirectory,
         configTable,
         configClient,
+        upTo,
         dryRun,
       }: MigrateExecuteArguments) => {
         await migrate({
@@ -32,6 +38,7 @@ export const migrateExecute = (logger: MigrationLogger = console): commander.Com
             directory: configDirectory,
             table: configTable,
           }),
+          upTo,
           logger,
           dryRun,
         });
